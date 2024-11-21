@@ -8,6 +8,7 @@ import (
 )
 
 type UsecaseQuery interface {
+	BillingTrip(ctx context.Context, userId string, orderId string) utils.Result
 }
 
 type UsecaseCommand interface {
@@ -17,6 +18,7 @@ type UsecaseCommand interface {
 type MongodbRepositoryQuery interface {
 	FindDriver(ctx context.Context, userId string) <-chan utils.Result
 	FindActiveOrderPassanger(ctx context.Context, orderId string) <-chan utils.Result
+	FindBillingPassanger(ctx context.Context, userId string, orderId string) <-chan utils.Result
 }
 
 type MongodbRepositoryCommand interface {

@@ -2,8 +2,8 @@ package queries
 
 import (
 	"context"
-	driver "payment-service/bin/modules/billing"
-	"payment-service/bin/modules/billing/models"
+	driver "payment-service/bin/modules/wallet"
+	"payment-service/bin/modules/wallet/models"
 	"payment-service/bin/pkg/databases/mongodb"
 	"payment-service/bin/pkg/utils"
 
@@ -21,7 +21,7 @@ func NewQueryMongodbRepository(mongodb mongodb.MongoDBLogger) driver.MongodbRepo
 	}
 }
 
-func (q queryMongodbRepository) FindDriver(ctx context.Context, userId string) <-chan utils.Result {
+func (q queryMongodbRepository) FindUser(ctx context.Context, userId string) <-chan utils.Result {
 	output := make(chan utils.Result)
 
 	go func() {
@@ -51,35 +51,7 @@ func (q queryMongodbRepository) FindDriver(ctx context.Context, userId string) <
 	return output
 }
 
-func (q queryMongodbRepository) FindActiveOrderPassanger(ctx context.Context, orderId string) <-chan utils.Result {
-	output := make(chan utils.Result)
-
-	go func() {
-		defer close(output)
-		var trip models.TripOrder
-		err := q.mongoDb.FindOne(mongodb.FindOne{
-			Result:         &trip,
-			CollectionName: "trip-orders",
-			Filter: bson.M{
-				"orderId": orderId,
-			},
-		}, ctx)
-		if err != nil {
-			output <- utils.Result{
-				Error: err,
-			}
-		}
-
-		output <- utils.Result{
-			Data: trip,
-		}
-
-	}()
-
-	return output
-}
-
-func (q queryMongodbRepository) FindBillingPassanger(ctx context.Context, userId string, orderId string) <-chan utils.Result {
+func (q queryMongodbRepository) Findwallet(ctx context.Context, userId string) <-chan utils.Result {
 	output := make(chan utils.Result)
 
 	go func() {
@@ -87,10 +59,9 @@ func (q queryMongodbRepository) FindBillingPassanger(ctx context.Context, userId
 		var trip models.Transaction
 		err := q.mongoDb.FindOne(mongodb.FindOne{
 			Result:         &trip,
-			CollectionName: "billing",
+			CollectionName: "wallet",
 			Filter: bson.M{
-				"orderId":     orderId,
-				"passengerId": userId,
+				"userId": userId,
 			},
 		}, ctx)
 		if err != nil {

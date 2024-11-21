@@ -112,4 +112,16 @@ func setHttp(e *echo.Echo) {
 		log.GetLogger().Info("main", "This service is running properly", "setConfluentEvents", "")
 		return utils.Response(nil, "This service is running properly", 200, c)
 	})
+	redisClient := redis.GetClient()
+	kafkaProducer, err := kafkaConfluent.NewProducer(kafkaConfluent.GetConfig().GetKafkaConfig(), log.GetLogger())
+	if err != nil {
+		panic(err)
+	}
+	paymentQueryMongoRepo := paymentRepoQueries.NewQueryMongodbRepository(mongodb.NewMongoDBLogger(mongodb.GetSlaveConn(), mongodb.GetSlaveDBName(), log.GetLogger()))
+	paymentCommandRepo := paymentRepoCommands.NewCommandMongodbRepository(mongodb.NewMongoDBLogger(mongodb.GetSlaveConn(), mongodb.GetSlaveDBName(), log.GetLogger()))
+
+	paymentQueryUsecase := paymentUsecase.NewQueryUsecase(paymentQueryMongoRepo, redisClient)
+	paymentCommandUsecase := paymentUsecase.NewCommandUsecase(paymentQueryMongoRepo, paymentCommandRepo, redisClient, kafkaProducer)
+
+	paymentHandler.InitbillingHttpHandler(e, paymentQueryUsecase, paymentCommandUsecase)
 }

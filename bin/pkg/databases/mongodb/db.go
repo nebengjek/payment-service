@@ -169,7 +169,7 @@ func (m MongoDBLogger) FindOne(payload FindOne, ctx context.Context) error {
 	}
 
 	if err := documentReturned.Decode(payload.Result); err != nil {
-		msg := "cannot unmarshal result"
+		msg := "cannot unmarshal result cok"
 		return errors.InternalServerError(msg)
 	}
 

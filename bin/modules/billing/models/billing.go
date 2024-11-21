@@ -16,21 +16,36 @@ type User struct {
 	Id           string `json:"_id" bson:"_id"`
 	FullName     string `json:"fullName" bson:"fullName" validate:"required,min=3,max=100"`
 	MobileNumber string `json:"mobileNumber" bson:"mobileNumber" validate:"required"`
-	Completed    bool   `'json:"completed" bson:"completed"`
+}
+
+type BillingResponse struct {
+	OrderID     string  `json:"orderId"`
+	PassengerID string  `json:"passengerId"`
+	Trip        Trip    `json:"trip"`
+	Driver      User    `json:"driver"`
+	TotalFare   float64 `json:"totalFare"`
+	Status      string  `json:"status"`
+}
+
+type Trip struct {
+	Origin      Location `json:"origin"`
+	Destination Location `json:"destination"`
+	DistanceKm  float64  `json:"distanceKm"`
 }
 
 type TripOrder struct {
-	OrderID       string    `json:"orderId" bson:"orderId"`
-	PassengerID   string    `json:"passengerId" bson:"passengerId"`
-	DriverID      string    `json:"driverId,omitempty" bson:"driverId,omitempty"`
-	Origin        Location  `json:"origin" bson:"origin"`
-	Destination   Location  `json:"destination" bson:"destination"`
-	Status        string    `json:"status" bson:"status"`
-	CreatedAt     time.Time `json:"createdAt" bson:"createdAt"`
-	UpdatedAt     time.Time `json:"updatedAt" bson:"updatedAt"`
-	EstimatedFare float64   `json:"estimatedFare" bson:"estimatedFare"`
-	DistanceKm    float64   `json:"distanceKm" bson:"distanceKm"`
-	RealDistance  float64   `json:"realDistance,omitempty" bson:"realDistance,omitempty"`
+	ID            primitive.ObjectID `bson:"_id,omitempty"`
+	OrderID       string             `json:"orderId" bson:"orderId"`
+	PassengerID   string             `json:"passengerId" bson:"passengerId"`
+	DriverID      string             `json:"driverId,omitempty" bson:"driverId,omitempty"`
+	Origin        Location           `json:"origin" bson:"origin"`
+	Destination   Location           `json:"destination" bson:"destination"`
+	Status        string             `json:"status" bson:"status"`
+	CreatedAt     time.Time          `json:"createdAt" bson:"createdAt"`
+	UpdatedAt     time.Time          `json:"updatedAt" bson:"updatedAt"`
+	EstimatedFare float64            `json:"estimatedFare" bson:"estimatedFare"`
+	DistanceKm    float64            `json:"distanceKm" bson:"distanceKm"`
+	RealDistance  float64            `json:"realDistance,omitempty" bson:"realDistance,omitempty"`
 }
 
 type Location struct {
