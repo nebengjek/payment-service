@@ -16,6 +16,7 @@ type User struct {
 	Id           string `json:"_id" bson:"_id"`
 	FullName     string `json:"fullName" bson:"fullName" validate:"required,min=3,max=100"`
 	MobileNumber string `json:"mobileNumber" bson:"mobileNumber" validate:"required"`
+	UserID       string `json:"userId" bson:"userId" validate:"required"`
 }
 
 type BillingResponse struct {
@@ -65,4 +66,29 @@ type Transaction struct {
 	PaymentMethod  string             `json:"paymentMethod" bson:"paymentMethod"`
 	Status         string             `json:"status" bson:"status"`
 	Timestamp      time.Time          `json:"timestamp" bson:"timestamp"`
+}
+type Route struct {
+	Origin      Location `json:"origin" `
+	Destination Location `json:"destination"`
+}
+
+type RouteSummary struct {
+	Route             Route   `json:"route"`
+	MinPrice          float64 `json:"minPrice"`
+	MaxPrice          float64 `json:"maxPrice"`
+	BestRouteKm       float64 `json:"bestRouteKm"`
+	BestRoutePrice    float64 `json:"bestRoutePrice"`
+	BestRouteDuration string  `json:"bestRouteDuration"`
+	Duration          int     `json:"duration"`
+}
+
+type AdminFee struct {
+	ID            primitive.ObjectID `bson:"_id,omitempty" json:"id"`
+	OrderID       string             `bson:"orderId" json:"orderId"`
+	PassengerID   string             `bson:"passengerId" json:"passengerId"`
+	DriverID      string             `bson:"driverId" json:"driverId"`
+	TripAmount    float64            `bson:"tripAmount" json:"tripAmount"`
+	AdminFee      float64            `bson:"adminFee" json:"adminFee"`
+	CollectedAt   time.Time          `bson:"collectedAt" json:"collectedAt"`
+	PaymentMethod string             `bson:"paymentMethod" json:"paymentMethod"`
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	driver "payment-service/bin/modules/billing"
 	"payment-service/bin/modules/billing/models"
+	walletModels "payment-service/bin/modules/wallet/models"
 	"payment-service/bin/pkg/databases/mongodb"
 	"payment-service/bin/pkg/utils"
 
@@ -101,6 +102,35 @@ func (q queryMongodbRepository) FindBillingPassanger(ctx context.Context, userId
 
 		output <- utils.Result{
 			Data: trip,
+		}
+
+	}()
+
+	return output
+}
+
+func (q queryMongodbRepository) Findwallet(ctx context.Context, userId string) <-chan utils.Result {
+	output := make(chan utils.Result)
+
+	go func() {
+		defer close(output)
+		var wallet walletModels.Wallet
+		err := q.mongoDb.FindOne(mongodb.FindOne{
+			Result:         &wallet,
+			CollectionName: "wallet",
+			Filter: bson.M{
+				"userId": userId,
+			},
+		}, ctx)
+
+		if err != nil {
+			output <- utils.Result{
+				Error: err,
+			}
+		}
+
+		output <- utils.Result{
+			Data: wallet,
 		}
 
 	}()
