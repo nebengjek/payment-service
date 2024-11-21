@@ -32,13 +32,13 @@ func NewCommandUsecase(mq driver.MongodbRepositoryQuery, mc driver.MongodbReposi
 	}
 }
 
-func (c *commandUsecase) TopUpWallet(ctx context.Context, userId string, payload models.TopUpRequest) utils.Result {
+func (c *commandUsecase) TopUpWallet(ctx context.Context, payload models.TopUpRequest) utils.Result {
 	var result utils.Result
-	walletUser := <-c.driverRepositoryQuery.Findwallet(ctx, userId)
-	if walletUser.Error != nil {
+	walletUser := <-c.driverRepositoryQuery.Findwallet(ctx, payload.UserID)
+	if walletUser.Error != nil || walletUser.Data == nil {
 		// create new wallet
 		newWallet := models.Wallet{
-			UserID:      userId,
+			UserID:      payload.UserID,
 			Balance:     payload.Amount,
 			LastUpdated: time.Now(),
 			TransactionLog: []models.TransactionLog{
@@ -55,7 +55,7 @@ func (c *commandUsecase) TopUpWallet(ctx context.Context, userId string, payload
 		if createWallet.Error != nil {
 			errObj := httpError.NewInternalServerError()
 			errObj.Message = fmt.Sprintf("Error: %v, Please try again later", createWallet.Error)
-			log.GetLogger().Error("command_usecase", errObj.Message, "CompletedTrip", utils.ConvertString(createWallet.Error))
+			log.GetLogger().Error("command_usecase", errObj.Message, "TopUpWallet", utils.ConvertString(createWallet.Error))
 			result.Error = errObj
 			return result
 		}
@@ -82,11 +82,4 @@ func (c *commandUsecase) TopUpWallet(ctx context.Context, userId string, payload
 	}
 	result.Data = wallet
 	return result
-}
-
-func CalculateFinalFare(baseFare, discountPercentage float64) (totalFare, adminFee, driverEarnings float64) {
-	totalFare = baseFare * (discountPercentage / 100)
-	adminFee = totalFare * 0.05
-	driverEarnings = totalFare - adminFee
-	return
 }

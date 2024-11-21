@@ -28,7 +28,8 @@ func InitwalletHttpHandler(e *echo.Echo, uq wallet.UsecaseQuery, uc wallet.Useca
 
 func (u walletHttpHandler) TopUpWallet(c echo.Context) error {
 	req := new(models.TopUpRequest)
-
+	userId := utils.ConvertString(c.Get("userId"))
+	req.UserID = userId
 	if err := c.Bind(&req); err != nil {
 		return utils.ResponseError(err, c)
 	}
@@ -37,8 +38,7 @@ func (u walletHttpHandler) TopUpWallet(c echo.Context) error {
 		return utils.ResponseError(err, c)
 	}
 
-	userId := utils.ConvertString(c.Get("userId"))
-	result := u.walletUseCaseCommand.TopUpWallet(c.Request().Context(), userId, *req)
+	result := u.walletUseCaseCommand.TopUpWallet(c.Request().Context(), *req)
 
 	if result.Error != nil {
 		return utils.ResponseError(result.Error, c)

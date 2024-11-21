@@ -157,11 +157,10 @@ func (m MongoDBLogger) FindOne(payload FindOne, ctx context.Context) error {
 
 	collection := m.mongoClient.Database(m.dbName).Collection(payload.CollectionName)
 	documentReturned := collection.FindOne(ctx, payload.Filter)
-
 	if documentReturned.Err() != nil {
 		if documentReturned.Err() == mongo.ErrNoDocuments {
 			m.logger.Slow("mongo-findOne", mongo.ErrNoDocuments.Error(), "mongo-query-noDocuments", "mongodb")
-			return nil
+			return mongo.ErrNoDocuments
 		}
 
 		msg := fmt.Sprintf("Error Mongodb Connection : %s", documentReturned.Err())

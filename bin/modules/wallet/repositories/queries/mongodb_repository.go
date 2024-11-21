@@ -56,14 +56,15 @@ func (q queryMongodbRepository) Findwallet(ctx context.Context, userId string) <
 
 	go func() {
 		defer close(output)
-		var trip models.Transaction
+		var wallet models.Wallet
 		err := q.mongoDb.FindOne(mongodb.FindOne{
-			Result:         &trip,
+			Result:         &wallet,
 			CollectionName: "wallet",
 			Filter: bson.M{
 				"userId": userId,
 			},
 		}, ctx)
+
 		if err != nil {
 			output <- utils.Result{
 				Error: err,
@@ -71,7 +72,7 @@ func (q queryMongodbRepository) Findwallet(ctx context.Context, userId string) <
 		}
 
 		output <- utils.Result{
-			Data: trip,
+			Data: wallet,
 		}
 
 	}()

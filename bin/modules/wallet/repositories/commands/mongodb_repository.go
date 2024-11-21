@@ -64,7 +64,12 @@ func (c commandMongodbRepository) UpdateWallet(ctx context.Context, data models.
 				"userId": data.UserID,
 				"_id":    objId,
 			},
-			Document: data,
+			Document: bson.M{
+				"userId":         data.UserID,
+				"balance":        data.Balance,
+				"transactionLog": data.TransactionLog,
+				"lastUpdated":    data.LastUpdated,
+			},
 		}, ctx)
 
 		if err != nil {

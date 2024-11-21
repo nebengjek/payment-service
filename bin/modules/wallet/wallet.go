@@ -13,7 +13,7 @@ type UsecaseQuery interface {
 
 type UsecaseCommand interface {
 	// idiomatic go, ctx first before payload. See https://pkg.go.dev/context#pkg-overview
-	TopUpWallet(ctx context.Context, userId string, payload models.TopUpRequest) utils.Result
+	TopUpWallet(ctx context.Context, payload models.TopUpRequest) utils.Result
 }
 
 type MongodbRepositoryQuery interface {

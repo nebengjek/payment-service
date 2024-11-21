@@ -18,6 +18,11 @@ import (
 	paymentRepoCommands "payment-service/bin/modules/billing/repositories/commands"
 	paymentRepoQueries "payment-service/bin/modules/billing/repositories/queries"
 	paymentUsecase "payment-service/bin/modules/billing/usecases"
+
+	walletHandler "payment-service/bin/modules/wallet/handlers"
+	walletRepoCommands "payment-service/bin/modules/wallet/repositories/commands"
+	walletRepoQueries "payment-service/bin/modules/wallet/repositories/queries"
+	walletUsecase "payment-service/bin/modules/wallet/usecases"
 	kafkaConfluent "payment-service/bin/pkg/kafka/confluent"
 
 	"payment-service/bin/pkg/apm"
@@ -123,5 +128,11 @@ func setHttp(e *echo.Echo) {
 	paymentQueryUsecase := paymentUsecase.NewQueryUsecase(paymentQueryMongoRepo, redisClient)
 	paymentCommandUsecase := paymentUsecase.NewCommandUsecase(paymentQueryMongoRepo, paymentCommandRepo, redisClient, kafkaProducer)
 
+	walletQueryMongoRepo := walletRepoQueries.NewQueryMongodbRepository(mongodb.NewMongoDBLogger(mongodb.GetSlaveConn(), mongodb.GetSlaveDBName(), log.GetLogger()))
+	walletCommandRepo := walletRepoCommands.NewCommandMongodbRepository(mongodb.NewMongoDBLogger(mongodb.GetSlaveConn(), mongodb.GetSlaveDBName(), log.GetLogger()))
+
+	walletQueryUsecase := walletUsecase.NewQueryUsecase(walletQueryMongoRepo, redisClient)
+	walletCommandUsecase := walletUsecase.NewCommandUsecase(walletQueryMongoRepo, walletCommandRepo, redisClient, kafkaProducer)
+	walletHandler.InitwalletHttpHandler(e, walletQueryUsecase, walletCommandUsecase)
 	paymentHandler.InitbillingHttpHandler(e, paymentQueryUsecase, paymentCommandUsecase)
 }
