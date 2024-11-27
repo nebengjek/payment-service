@@ -2,7 +2,6 @@ package commands
 
 import (
 	"context"
-	"fmt"
 
 	user "payment-service/bin/modules/wallet"
 	"payment-service/bin/modules/wallet/models"
@@ -58,16 +57,13 @@ func (c commandMongodbRepository) UpdateWallet(ctx context.Context, data models.
 
 	go func() {
 		defer close(output)
-		objId, _ := primitive.ObjectIDFromHex(data.ID.String())
-		fmt.Println(data.UserID, objId, "APPAN NEEH")
 		err := c.mongoDb.UpdateOne(mongodb.UpdateOne{
 			CollectionName: "wallet",
 			Filter: bson.M{
 				"userId": data.UserID,
-				"_id":    objId,
+				"_id":    data.ID,
 			},
 			Document: bson.M{
-				"userId":         data.UserID,
 				"balance":        data.Balance,
 				"transactionLog": data.TransactionLog,
 				"lastUpdated":    data.LastUpdated,
