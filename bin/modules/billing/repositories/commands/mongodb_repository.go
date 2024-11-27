@@ -88,12 +88,11 @@ func (c commandMongodbRepository) UpdateWallet(ctx context.Context, data walletM
 
 	go func() {
 		defer close(output)
-		objId, _ := primitive.ObjectIDFromHex(data.ID.String())
 		err := c.mongoDb.UpdateOne(mongodb.UpdateOne{
 			CollectionName: "wallet",
 			Filter: bson.M{
 				"userId": data.UserID,
-				"_id":    objId,
+				"_id":    data.ID,
 			},
 			Document: bson.M{
 				"userId":         data.UserID,
